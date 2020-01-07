@@ -57,14 +57,10 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - run:
-          command: docker info
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "build.sbt" }}
             - v1-dependencies-
-      - aws-ecr/ecr-login:
-          region: $AWS_REGION
       - run:
           name: Run standard test suite
           command: cat /dev/null | sbt -mem 4000 test
@@ -73,14 +69,10 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - run:
-          command: docker info
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "build.sbt" }}
             - v1-dependencies-
-      - aws-ecr/ecr-login:
-          region: $AWS_REGION
       - run:
           name: Check formatting
           command: cat /dev/null | sbt -mem 4000 scalafmtCheck test:scalafmtCheck scalafmtSbtCheck
