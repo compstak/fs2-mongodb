@@ -6,13 +6,12 @@ import cats.effect.{Resource, Sync}
 
 object Mongo {
   def fromUrl[F[_]](url: String)(implicit F: Sync[F]): Resource[F, MongoClient] =
-    Resource.make(F.delay(MongoClients.create(url))){ client =>
+    Resource.make(F.delay(MongoClients.create(url))) { client =>
       F.delay(client.close())
     }
 
   def fromSettings[F[_]](settings: MongoClientSettings)(
-    implicit F: Sync[F]): Resource[F, MongoClient] = {
-    Resource.make(F.delay(MongoClients.create(settings)))(client =>
-      F.delay(client.close()))
+      implicit F: Sync[F]): Resource[F, MongoClient] = {
+    Resource.make(F.delay(MongoClients.create(settings)))(client => F.delay(client.close()))
   }
 }
