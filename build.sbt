@@ -1,20 +1,24 @@
-scalaVersion := "2.11.12"
+scalaVersion := "2.12.10"
 
-crossScalaVersions := List("2.11.12", "2.12.7")
+crossScalaVersions := List("2.11.12", "2.12.10", "2.13.1")
 
-organization := "org.lyranthe"
+organization := "compstak"
 
 name := "fs2-mongodb"
 
 libraryDependencies += "org.mongodb" % "mongodb-driver-async" % "3.8.0"
-libraryDependencies += "co.fs2"      %% "fs2-core"            % "1.0.0"
+libraryDependencies += "co.fs2"      %% "fs2-core"            % "2.1.0"
 
 enablePlugins(GitVersioning)
 
-publishTo := sonatypePublishTo.value
-sonatypeProfileName := "org.lyranthe"
+credentials += Credentials(
+  "Sonatype Nexus Repository Manager",
+  "nexus.compstak.com",
+  sys.env.get("NEXUS_USERNAME").getOrElse(""),
+  sys.env.get("NEXUS_PASSWORD").getOrElse("")
+)
+publishTo := {
+  val prefix = if (isSnapshot.value) "snapshots" else "releases"
+  Some("CompStak".at(s"https://nexus.compstak.com/repository/maven-$prefix"))
+}
 publishMavenStyle := true
-licenses in Global += "MIT" -> url("https://github.com/fiadliel/fs2-mongodb/blob/master/LICENSE")
-
-import xerial.sbt.Sonatype._
-sonatypeProjectHosting := Some(GitHubHosting("fiadliel", "fs2-mongodb", "Gary Coady", "gary@lyranthe.org"))

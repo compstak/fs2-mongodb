@@ -1,0 +1,96 @@
+version: 2.1
+
+_defaults: &defaults
+  machine:
+    docker_layer_caching: false
+  working_directory: ~/repo
+  environment:
+    # Customize the JVM maximum heap limit
+    JVM_OPTS: -Xmx4000m
+    SBT_OPTS: -Xmx4000m -Xss512m
+    TERM: dumb
+
+workflows:
+  version: 2
+  development:
+    jobs:
+      - build:
+          context: aws-deploy
+      - test:
+          context: aws-deploy
+          requires:
+            - build
+      - style:
+          context: aws-deploy
+          requires:
+            - build
+      - release:
+          context: aws-deploy
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - build
+            - test
+            - style
+
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.sbt" }}
+            - v1-dependencies-
+      - run:
+          name: Compile
+          command: cat /dev/null | sbt -mem 4000  test:compile
+      - save_cache:
+          paths:
+            - ~/.ivy2/cache
+            - ~/.sbt
+          key: v1-dependencies-{{ checksum "build.sbt" }}
+
+  test:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          command: docker info
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.sbt" }}
+            - v1-dependencies-
+      - aws-ecr/ecr-login:
+          region: $AWS_REGION
+      - run:
+          name: Run standard test suite
+          command: cat /dev/null | sbt -mem 4000 test
+
+  style:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          command: docker info
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.sbt" }}
+            - v1-dependencies-
+      - aws-ecr/ecr-login:
+          region: $AWS_REGION
+      - run:
+          name: Check formatting
+          command: cat /dev/null | sbt -mem 4000 scalafmtCheck test:scalafmtCheck scalafmtSbtCheck
+
+  release:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.sbt" }}
+            - v1-dependencies-
+      - run: cat /dev/null | sbt -mem 4000 ciReleaseTagNextVersion ciRelease
