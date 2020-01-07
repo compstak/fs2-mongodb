@@ -6,3 +6,16 @@ addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.1.3")
 addSbtPlugin("com.timushev.sbt"          % "sbt-updates"  % "0.3.4")
 
 libraryDependencies += "org.slf4j" % "slf4j-nop" % "1.7.25"
+
+resolvers += ("CompStak Nexus Releases".at("https://nexus.compstak.com/repository/maven-releases"))
+
+ThisBuild / useCoursier := false
+
+credentials += Credentials(
+  "Sonatype Nexus Repository Manager",
+  "nexus.compstak.com",
+  sys.env.get("NEXUS_USERNAME").getOrElse(""),
+  sys.env.get("NEXUS_PASSWORD").getOrElse("")
+)
+
+addSbtPlugin("compstak" % "sbt-ci-release-early" % "1.3.0")
