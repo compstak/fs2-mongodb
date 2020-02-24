@@ -7,7 +7,7 @@ addSbtPlugin("com.timushev.sbt"          % "sbt-updates"  % "0.3.4")
 
 libraryDependencies += "org.slf4j" % "slf4j-nop" % "1.7.25"
 
-resolvers += ("CompStak Nexus Releases".at("https://nexus.compstak.com/repository/maven-releases"))
+resolvers += ("CompStak Nexus Releases".at("https://nexus.compstak.com/repository/maven-group"))
 
 ThisBuild / useCoursier := false
 
@@ -18,4 +18,4 @@ credentials += Credentials(
   sys.env.get("NEXUS_PASSWORD").getOrElse("")
 )
 
-addSbtPlugin("compstak" % "sbt-ci-release-early" % "1.3.0")
+addSbtPlugin("compstak" % "sbt-ci-release-early" % "1.3.3")
