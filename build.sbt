@@ -7,7 +7,7 @@ organization := "compstak"
 name := "fs2-mongodb"
 
 libraryDependencies += "org.mongodb" % "mongodb-driver-async" % "3.8.0"
-libraryDependencies += "co.fs2"      %% "fs2-core"            % "2.1.0"
+libraryDependencies += "co.fs2"      %% "fs2-core"            % "2.2.2"
 
 enablePlugins(GitVersioning)
 
