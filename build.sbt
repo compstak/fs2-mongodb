@@ -1,6 +1,6 @@
 scalaVersion := "2.12.10"
 
-crossScalaVersions := List("2.11.12", "2.12.10")
+crossScalaVersions := List("2.12.10")
 
 organization := "compstak"
 
